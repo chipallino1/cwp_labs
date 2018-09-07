@@ -1,7 +1,8 @@
-var res='';
-
-for (var i=2; i < process.argv.length; i++) {
-	res+=process.argv[i]+' '; 
+const dir=process.argv[2];
+if(dir[0]!='"' && dir[dir.length-1]!='"')
+{
+	console.log('Please write path with " " ("D:/folder")');
+	return;
 }
-
-console.log(res);
+const fs=require('fs');
+fs.appendFile(dir+'/summary.js',"console.log('Hello!');",()=>{console.log('its ok!');}); 
