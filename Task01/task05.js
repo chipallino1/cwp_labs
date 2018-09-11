@@ -1,4 +1,4 @@
-const dir=process.argv[2];
+var dir=process.argv[2];
 const fs=require('fs');
 
 if(process.argv[3]!=null)
@@ -7,71 +7,35 @@ if(process.argv[3]!=null)
 	return;
 }
 
-/*fs.readdir(dir,(err,files)=>{
-	for (var i = 0; i <files.length; i++) {
-		
-		var dirPath=dir+'/'+files[i];
-		//console.log(dirPath);
-		getFiles(dirPath);
-	}
-}); */
-getFiles(dir);
+dir=dir.replace(/\\/g, "/");
 
-//getFiles(dir);
-fs.appendFile(dir+'/summary.js',"console.log('Hello!');",()=>{console.log('its ok!');}); 
-
-
-function getFiles(file) {
+var str="const fs=require('fs');\n"+
+"dir='"+dir+"';\n"+
+"getFiles(dir);\n"+
+"function getFiles(file) {\n"+
 	
-	//console.log(file);
-	fs.stat(file,(err,stats)=>
-				{
+	
+	"fs.stat(file,(err,stats)=>\n"+
+				"{\n"+
 					
-					console.log(file);
-					if(stats.isDirectory())
-					{
-						//console.log(file);
-						//console.log(stats.isDirectory());
+					"console.log(file.replace(new RegExp (dir, 'g'), ''));\n"+
+					"if(stats.isDirectory())\n"+
+					"{\n"+
 						
 
-						fs.readdir(file,(err,files)=>{
-						for (var i = 0; i <files.length; i++) {
+						"fs.readdir(file,(err,files)=>{\n"+
+						"for (var i = 0; i <files.length; i++) {\n"+
 		
-						var dirPath=file+'/'+files[i];
-						//console.log(dirPath);
-						getFiles(dirPath);
-					}
-					}); 
-						//getFiles(file);
-
-					}
-				
-			})
-
-/*
-fs.readdir(dirPath,(err,files)=>{
-	for(var i=0;i<files.length;i++)
-		{
-			pathToFile=dirPath+'/'+files[i];
-			console.log(pathToFile);
-			fs.stat(pathToFile,(err,stats)=>
-				{
-					
-					console.log(pathToFile);
-					if(stats.isDirectory())
-					{
-						console.log(stats.isDirectory());
+						"var dirPath=file+'/'+files[i];\n"+
+						"getFiles(dirPath);\n"+
+					"}\n"+
+					"});\n"+ 
 						
-						getFiles(pathToFile);
 
-					}
+					"}\n"+
 				
-			})
-			
-
-		}
+			"})\n"+
 
 
-
-});*/
-}
+"}\n";
+//fs.writeFile(dir+'/summary.js',str,()=>{console.log('its ok!');});
