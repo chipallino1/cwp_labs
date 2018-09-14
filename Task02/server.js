@@ -1,6 +1,17 @@
 // server.js
 const net = require('net');
 const port = 8124;
+
+const fs=require('fs');
+var qaArr;
+
+fs.readFile('qa.json',(err,data)=>{
+	qaArr=JSON.parse(data);
+	for (let i = 0; i < qaArr.length; i++) {
+		qaArr[i].wrongAnswer=Math.random() * (qaArr.length - 0) + 0;
+	}
+});
+
 var startID=0;
 const server = net.createServer((client) => {
   console.log('Client connected');
@@ -17,6 +28,7 @@ const server = net.createServer((client) => {
   		{
   			startTalking(client);
   			client.isStartTalking=true;
+
   		}
   		else
   		{
@@ -25,9 +37,13 @@ const server = net.createServer((client) => {
     }
     else
     {
-    	saySomething('its okay',client);
+    	//saySomething('its okay',client);
+    	//console.log(data);
+    	data=data.substring(5);
+    	console.log(client.ID+' '+data);
+    	getAnswer(data,client);
     }
-    console.log(data);
+    //console.log(data);
     //client.write('\r\nHello!\r\nRegards,\r\nServer\r\n'+client.ID+'\n\r');
   });
 
@@ -35,7 +51,9 @@ const server = net.createServer((client) => {
 });
 
 server.listen(port, () => {
+	
   console.log(`Server listening on localhost:${port}`);
+
 });
 
 
@@ -52,5 +70,25 @@ function sayError(errorString,client) {
 function saySomething(string,client) {
 
 	client.write(string);
+
+}
+function getAnswer(string,client) {
 	
+	for(let i=0;i<qaArr.length;i++)
+	{
+		if(qaArr[i].question===string)
+		{
+			let rand=Math.random() * (qaArr.length - 0) + 0;
+			let temp=Math.random() * (qaArr.length - 0) + 0;
+			if(rand>temp)
+			{
+				fs.appendFile('client_'+client.ID+'.txt','\n question: '+qaArr[i].question+' - data: '+qaArr[i].wrongAnswer+' \n',()=>{});
+				client.write('data:'+qaArr[i].wrongAnswer);
+				return;
+			}
+			fs.appendFile('client_'+client.ID+'.txt','\n question: '+qaArr[i].question+' - data: '+qaArr[i].answer+' \n',()=>{});
+			client.write('data:'+qaArr[i].answer);
+		}
+	}
+
 }
