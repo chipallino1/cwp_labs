@@ -45,6 +45,7 @@ const server = net.createServer((client) => {
 
       console.log("got file");
       getFileName(fullFileName);
+     // client.write("got file");
     	//console.log(client.ID+' '+data);
     	//getAnswer(data,client);
     }
@@ -93,7 +94,7 @@ function createFile(fileName,data) {
 function getFileName(fullFileName,callback) {
   
     let lastIndex=fullFileName.lastIndexOf('/');
-    let fileName=fullFileName.substring(lastIndex);
+    let fileName=fullFileName.substring(lastIndex+1);
 
     console.log(fileName);
    // callback();
