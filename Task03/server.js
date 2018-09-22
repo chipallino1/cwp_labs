@@ -24,7 +24,7 @@ const server = net.createServer((client) => {
   client.on('data', (data) => {
   	if(!client.isStartTalking)
   	{
-  		if(data==='QA')
+  		if(data==='FILES')
   		{
   			startTalking(client);
   			client.isStartTalking=true;
@@ -39,9 +39,14 @@ const server = net.createServer((client) => {
     {
     	//saySomething('its okay',client);
     	//console.log(data);
-    	data=data.substring(5);
-    	console.log(client.ID+' '+data);
-    	getAnswer(data,client);
+    	//data=data.substring(5);
+      let fullFileName=data.substring(0,data.indexOf("|"));
+      data=data.substring(data.lastIndexOf("|"));
+
+      console.log("got file");
+      getFileName(fullFileName);
+    	//console.log(client.ID+' '+data);
+    	//getAnswer(data,client);
     }
     //console.log(data);
     //client.write('\r\nHello!\r\nRegards,\r\nServer\r\n'+client.ID+'\n\r');
@@ -72,6 +77,30 @@ function saySomething(string,client) {
 	client.write(string);
 
 }
+
+function createFile(fileName,data) {
+  
+  fs.writeFile(fileName, data, function(err) {
+
+   
+
+    console.log("The file was created!");
+
+});
+
+}
+
+function getFileName(fullFileName,callback) {
+  
+    let lastIndex=fullFileName.lastIndexOf('/');
+    let fileName=fullFileName.substring(lastIndex);
+
+    console.log(fileName);
+   // callback();
+
+
+}
+
 function getAnswer(string,client) {
 	
 	for(let i=0;i<qaArr.length;i++)

@@ -7,18 +7,6 @@ var qaArr;
 
 var curQues=0;
 
-fs.readFile('qa.json',(err,data)=>{
-	qaArr=JSON.parse(data);
-	console.log('------------------------------------------');
-	for(let i=0;i<qaArr.length;i++)
-	{
-		let random1=Math.random() * (qaArr.length - 0) + 0;
-		let random2=Math.random() * (qaArr.length - 0) + 0;
-		let temp;
-		temp=qaArr[random1];
-		qaArr[random1]=qaArr[random2];
-		qaArr[random2]=temp;
-	}
 
 
 const client = new net.Socket();
@@ -27,7 +15,7 @@ client.setEncoding('utf8');
 
 client.connect(port, function() {
   console.log('Connected');
-  client.write('QA');
+  client.write('FILES');
 });
 
 client.on('data', function(data) {
@@ -35,7 +23,9 @@ client.on('data', function(data) {
    if(data==='ACK')
    {
    		//console.log(qaArr);
-   		client.write('ques:'+qaArr[curQues].question);
+
+      sendFiles(process.argv);
+   	//	client.write('ques:'+qaArr[curQues].question);
    }
 
    if(data==='DEC')
@@ -64,7 +54,7 @@ client.on('data', function(data) {
 client.on('close', function() {
   console.log('Connection closed');
 });
-});
+
 function checkAnswer(data,current)
 {
 	if(qaArr[current].answer===data)
@@ -77,4 +67,48 @@ function checkAnswer(data,current)
 		console.log('\n'+qaArr[current].question);
 		console.log(qaArr[current].answer + ' server gave wrong answer!\n');
 	}
+}
+function sendFiles(argv)
+{
+
+  for(let i=2;i<argv.length;i++)
+  {
+   // console.log(fs);
+    getFiles(argv[i],sendFile);
+
+  }
+
+}
+function getFiles(file,callback) {
+ // fs=require('fs');
+  //console.log(fs1);
+fs.stat(file,(err,stats)=>
+{
+  //console.log(''+file.replace(new RegExp (dir, 'g'), ''));
+  if(stats.isDirectory())
+  {
+    console.log("dir");
+    fs.readdir(file,(err,files)=>{
+    for (var i = 0; i <files.length; i++) {
+    var dirPath=file+'/'+files[i];
+    getFiles(dirPath);
+      }
+    });
+  }
+  else
+  {
+    console.log("file");
+    sendFile(file);
+  }
+})
+}
+
+function sendFile(file) {
+  
+  fs.readFile(file,(err,data)=>{
+
+        client.write(file+'|'+data);
+
+  });
+
 }
