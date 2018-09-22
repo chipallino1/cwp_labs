@@ -32,9 +32,9 @@ client.on('data', function(data) {
    {
    		client.destroy();
    }
-   if(data==='got file')
+   if(data==='submit')
    {
-
+      //console.log('submit');
    }
 
    if(data.indexOf('data:')+1)
