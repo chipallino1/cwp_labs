@@ -38,7 +38,15 @@ client.on('data', function(data) {
         checkDirOrFile(allDirs[0],chooseWhatToDo);
       else
       {
-        client.destroy();
+        if(currDir<process.argv.length-1)
+        {
+          currDir++;
+          sendFiles(process.argv);
+        }
+        else
+          {
+            client.destroy();
+          }
       }
       //console.log('submit');
    }
@@ -78,13 +86,15 @@ function checkAnswer(data,current)
 		console.log(qaArr[current].answer + ' server gave wrong answer!\n');
 	}
 }
+
+var currDir=2;
 function sendFiles(argv)
 {
 
   //for(let i=2;i<argv.length;i++)
   //{
    // console.log(fs);
-    getFiles(argv[2],checkDirOrFile);
+    getFiles(argv[currDir],checkDirOrFile);
 
   //}
 
@@ -93,13 +103,15 @@ var allDirs=[];
 function getFiles(file,callback) {
  // fs=require('fs');
   //console.log(fs1);
-  
+  console.log('--------'+file);
   fs.readdir(file,(err,files)=>{
     for (let i = 0; i <files.length; i++) {
     let dirPath=file+'/'+files[i];
     allDirs.push(dirPath);
    // getFiles(dirPath,callback);
       }
+      console.log(callback);
+      if(callback!=undefined)
       callback(allDirs,chooseWhatToDo);
     });
   
@@ -126,7 +138,7 @@ function getFiles(file,callback) {
 
 function checkDirOrFile(file,callback) {
   
-    console.log(file.length);
+    //console.log(file.length);
     let arr=[];
     if(Array.isArray(file))
     {
@@ -141,12 +153,12 @@ function checkDirOrFile(file,callback) {
   //console.log(''+file.replace(new RegExp (dir, 'g'), ''));
   if(stats.isDirectory())
   {
-    console.log("dir");
+    //console.log("dir");
     callback("dir",arr[0]);
   }
   else
   {
-    console.log("file");
+    //console.log("file");
     callback("file",arr[0]);
   }
 })
@@ -155,12 +167,12 @@ function checkDirOrFile(file,callback) {
 
 function chooseWhatToDo(fileOrDir,fileName) {
   
-    console.log(allDirs.length);
+    //console.log(allDirs.length);
     allDirs.splice(0,1);
     if(fileOrDir==='dir')
     {
 
-        getFiles(fileOrDir);
+        getFiles(fileName,checkDirOrFile);
     }
     else
     {
