@@ -34,6 +34,12 @@ client.on('data', function(data) {
    }
    if(data==='submit')
    {
+      if(allDirs.length>0)
+        checkDirOrFile(allDirs[0],chooseWhatToDo);
+      else
+      {
+        client.destroy();
+      }
       //console.log('submit');
    }
 
