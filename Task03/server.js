@@ -13,9 +13,20 @@ fs.readFile('qa.json',(err,data)=>{
 });
 
 var startID=0;
+let countClient=0;
 const server = net.createServer((client) => {
-  console.log('Client connected');
+  
 
+  countClient++;
+  console.log(countClient);
+  console.log(process.env.maxcountclients);
+  if(countClient>process.env.maxcountclients)
+  {
+    sayError('DEC',client);
+    countClient--;
+    return;
+  }
+  console.log('Client connected');
   client.ID=Date.now() + startID;
   client.isStartTalking=false;
   startID++;
@@ -26,6 +37,7 @@ const server = net.createServer((client) => {
   	{
   		if(data==='FILES')
   		{
+
   			startTalking(client);
   			client.isStartTalking=true;
 
@@ -53,7 +65,7 @@ const server = net.createServer((client) => {
     //client.write('\r\nHello!\r\nRegards,\r\nServer\r\n'+client.ID+'\n\r');
   });
 
-  client.on('end', () => console.log('Client disconnected'));
+  client.on('end', () =>{ countClient--;console.log(countClient);console.log('Client disconnected');});
 });
 
 server.listen(port, () => {

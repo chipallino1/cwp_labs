@@ -106,7 +106,7 @@ function getFiles(file,callback) {
  // fs=require('fs');
   //console.log(fs1);
 
-  //console.log('--------'+file);
+  console.log('--------'+file);
   //console.log('allDirs '+allDirs[0]);
   fs.readdir(file,(err,files)=>{
     //allDirs.splice(0,1);
