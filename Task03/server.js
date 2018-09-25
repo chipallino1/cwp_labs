@@ -44,7 +44,7 @@ const server = net.createServer((client) => {
       data=data.substring(data.lastIndexOf("|"));
 
       console.log("got file");
-      getFileName(fullFileName,client,sendSubmitFile);
+      getFileName(fullFileName,client,data,createIdDir);
      // client.write("got file");
     	//console.log(client.ID+' '+data);
     	//getAnswer(data,client);
@@ -79,32 +79,48 @@ function saySomething(string,client) {
 
 }
 
-function createFile(fileName,data) {
+function createFile(fileName,data,client,callback) {
   
   fs.writeFile(fileName, data, function(err) {
 
    
 
-    console.log("The file was created!");
+    console.log("The file "+fileName+" was created!");
+    callback(client);
 
 });
 
 }
 
-function getFileName(fullFileName,client,callback) {
+function getFileName(fullFileName,client,data,callback) {
   
     let lastIndex=fullFileName.lastIndexOf('/');
     let fileName=fullFileName.substring(lastIndex+1);
 
     console.log(fileName);
-    callback(client);
+    callback(client.ID,fileName,data,client,createFile);
 
 
 }
 
+
 function sendSubmitFile(client) {
   
   client.write('submit');
+
+}
+
+function createIdDir(id,fileName,data,client,callback) {
+  
+    fs.mkdir(id+"",(err)=>{
+        if(err)
+        {
+          console.log('----err----: '+err);
+          callback(id+'/'+fileName,data,client,sendSubmitFile);
+          return;
+        }
+        callback(id+'/'+fileName,data,client,sendSubmitFile);
+    });
 
 }
 

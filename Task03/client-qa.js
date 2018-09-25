@@ -7,7 +7,8 @@ var qaArr;
 
 var curQues=0;
 
-
+let dirsQueue=[];
+dirsQueue=process.argv;
 
 const client = new net.Socket();
 
@@ -24,7 +25,7 @@ client.on('data', function(data) {
    {
    		//console.log(qaArr);
 
-      sendFiles(process.argv);
+      sendFiles(dirsQueue);
    	//	client.write('ques:'+qaArr[curQues].question);
    } 
 
@@ -38,10 +39,10 @@ client.on('data', function(data) {
         checkDirOrFile(allDirs[0],chooseWhatToDo);
       else
       {
-        if(currDir<process.argv.length-1)
+        if(currDir<dirsQueue.length-1)
         {
           currDir++;
-          sendFiles(process.argv);
+          sendFiles(dirsQueue);
         }
         else
           {
@@ -94,6 +95,7 @@ function sendFiles(argv)
   //for(let i=2;i<argv.length;i++)
   //{
    // console.log(fs);
+  // allDirs.push(argv[currDir]);
     getFiles(argv[currDir],checkDirOrFile);
 
   //}
@@ -103,37 +105,24 @@ var allDirs=[];
 function getFiles(file,callback) {
  // fs=require('fs');
   //console.log(fs1);
-  console.log('--------'+file);
+
+  //console.log('--------'+file);
+  //console.log('allDirs '+allDirs[0]);
   fs.readdir(file,(err,files)=>{
+    //allDirs.splice(0,1);
     for (let i = 0; i <files.length; i++) {
     let dirPath=file+'/'+files[i];
+    //console.log('---'+files[i]);
     allDirs.push(dirPath);
    // getFiles(dirPath,callback);
       }
-      console.log(callback);
+      //console.log(callback);
+      
       if(callback!=undefined)
       callback(allDirs,chooseWhatToDo);
     });
   
-/*fs.stat(file,(err,stats)=>
-{
-  //console.log(''+file.replace(new RegExp (dir, 'g'), ''));
-  if(stats.isDirectory())
-  {
-    console.log("dir");
-    fs.readdir(file,(err,files)=>{
-    for (var i = 0; i <files.length; i++) {
-    let dirPath=file+'/'+files[i];
-    getFiles(dirPath,callback);
-      }
-    });
-  }
-  else
-  {
-    console.log("file");
-    callback(file);
-  }
-})*/
+
 }
 
 function checkDirOrFile(file,callback) {
@@ -148,12 +137,14 @@ function checkDirOrFile(file,callback) {
     {
       arr.push(file);
     }
-    fs.stat(arr[0],(err,stats)=>
+    //console.log('ewrwerwer'+allDirs[0]);
+    fs.stat(allDirs[0],(err,stats)=>
 {
   //console.log(''+file.replace(new RegExp (dir, 'g'), ''));
+ // console.log(arr[0]);
   if(stats.isDirectory())
   {
-    //console.log("dir");
+   // console.log(arr[0]);
     callback("dir",arr[0]);
   }
   else
@@ -168,16 +159,37 @@ function checkDirOrFile(file,callback) {
 function chooseWhatToDo(fileOrDir,fileName) {
   
     //console.log(allDirs.length);
-    allDirs.splice(0,1);
+    
+    
     if(fileOrDir==='dir')
     {
+        console.log('1');
+        //getFiles(allDirs[0],checkDirOrFile);
+      // dirsQueue.push(allDirs[0]);
+       allDirs.splice(0,1);
+       if(allDirs.length>0)
+          checkDirOrFile(allDirs[0],chooseWhatToDo);
+       /*
+       if(allDirs.length>0)
+          checkDirOrFile(allDirs[0],chooseWhatToDo);
+         else
+        {
+          if((currDir+1)<dirsQueue.length)
+          {
+            currDir=currDir+1;
+            allDirs.push(dirsQueue[currDir]);
+            checkDirOrFile(allDirs[0],chooseWhatToDo);
+          }
+      }*/
 
-        getFiles(fileName,checkDirOrFile);
     }
     else
     {
       sendFile(fileName);
+      allDirs.splice(0,1);
     }
+    
+    
 
 }
 
@@ -186,6 +198,7 @@ function sendFile(file) {
   fs.readFile(file,(err,data)=>{
 
         client.write(file+'|'+data);
+        //allDirs.splice(0,1);
 
   });
 
