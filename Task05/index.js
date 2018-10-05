@@ -13,7 +13,8 @@ const handlers = {
   '/api/articles/read':read,
   '/api/articles/update':update,
   '/api/articles/delete':drop,
-  '/api/comments/create':createComment
+  '/api/comments/create':createComment,
+  '/api/comments/delete':dropComment
 };
 
 const server = http.createServer((req, res) => {
@@ -192,6 +193,36 @@ function createComment(req, res, payload, cb) {
 
   });
 
+
+}
+function dropComment(req, res, payload, cb) {
+  
+  fs.readFile('articles.json',(error,data)=>{
+
+      let articles=[];
+      articles=JSON.parse(data);
+      for(let i=0;i<articles.length;i++)
+    {
+      if(articles[i].id==payload.articleId)
+      {
+        for(let j=0;j<articles[i].comments.length;j++)
+        {
+          if(articles[i].comments[j].id==payload.id)
+          {
+               articles[i].comments.splice(j,1);
+               fs.writeFile('articles.json',JSON.stringify(articles),(error)=>{
+                    cb(null,'true',false);
+                });
+              return;
+         }
+      }
+        
+       
+      }
+    }
+    cb(null,'false',false);
+
+  });
 
 }
 function notFound(req, res, payload, cb) {
