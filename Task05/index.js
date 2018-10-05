@@ -1,6 +1,6 @@
 const http = require('http');
 const fs=require('fs');
-let articles=[];
+//let articles=[];
 let comments=[];
 
 const hostname = '127.0.0.1';
@@ -10,7 +10,10 @@ const handlers = {
   '/sum': sum,
   '/api/articles/readall':readall,
   '/api/articles/create':create,
-  '/api/articles/read':read
+  '/api/articles/read':read,
+  '/api/articles/update':update,
+  '/api/articles/delete':drop,
+  '/api/comments/create':createComment
 };
 
 const server = http.createServer((req, res) => {
@@ -69,9 +72,13 @@ function readall(req, res, payload, cb) {
 }
 function create(req, res, payload, cb) {
   
-  articles.push(payload);
 
-  fs.writeFile('articles.json',JSON.stringify(articles),(error)=>{
+  fs.readFile('articles.json',(error,data)=>{
+      let articles=[];
+      articles=JSON.parse(data);
+      articles.push(payload);
+
+       fs.writeFile('articles.json',JSON.stringify(articles),(error)=>{
     if(error)
       cb(null,'false',false);
     else
@@ -79,13 +86,114 @@ function create(req, res, payload, cb) {
 
       
   });
+      
+
+  });
+
+}
+function update(req, res, payload, cb) {
+  
+  fs.readFile('articles.json',(error,data)=>{
+      let articles=[];
+      articles=JSON.parse(data);
+      for(let i=0;i<articles.length;i++)
+      {
+        if(articles[i].id==payload.id)
+        {
+          articles[i].title=payload.title;
+          articles[i].text=payload.text;
+          articles[i].date=payload.date;
+          articles[i].author=payload.author;
+
+          const result=JSON.stringify(articles);
+          fs.writeFile('articles.json',result,(error)=>{
+            cb(null,'true',false);
+            
+          })
+          return;
+          
+        }
+
+      }
+      cb(null,'false',false);
+
+    
+
+      
+  });
 
 }
 function read(req, res, payload, cb) {
-  // body...
+
+
+
+  fs.readFile('articles.json',(error,data)=>{
+
+      let articles=[];
+      articles=JSON.parse(data);
+      for(let i=0;i<articles.length;i++)
+    {
+      if(articles[i].id==payload.id)
+      {
+        cb(null,articles[i],false);
+       return;
+      }
+    }
+    cb(null,'false',false);
+
+  });
+
+  
+
 }
+function drop(req, res, payload, cb) {
+
+  fs.readFile('articles.json',(error,data)=>{
+
+      let articles=[];
+      articles=JSON.parse(data);
+      for(let i=0;i<articles.length;i++)
+    {
+      if(articles[i].id==payload.id)
+      {
+        articles.splice(i,1);
+        fs.writeFile('articles.json',JSON.stringify(articles),(error)=>{
+          cb(null,'true',false);
+        });
+        
+       return;
+      }
+    }
+    cb(null,'false',false);
+
+  });
+
+}
+function createComment(req, res, payload, cb) {
+  
+  fs.readFile('articles.json',(error,data)=>{
+
+      let articles=[];
+      articles=JSON.parse(data);
+      for(let i=0;i<articles.length;i++)
+    {
+      if(articles[i].id==payload.articleId)
+      {
+        articles[i].comments=[];
+        articles[i].comments.push(payload);
+        fs.writeFile('articles.json',JSON.stringify(articles),(error)=>{
+          cb(null,'true',false);
+        });
+        
+       return;
+      }
+    }
+    cb(null,'false',false);
+
+  });
 
 
+}
 function notFound(req, res, payload, cb) {
   cb({ code: 404, message: 'Not found'});
 }
