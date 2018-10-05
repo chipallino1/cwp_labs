@@ -1,0 +1,16 @@
+[REQ]---/api/articles/readall---Fri Oct 05 2018 16:21:17 GMT+0300 (GMT+03:00)
+---{
+	"id": "1",
+	"articleId": "3"
+}
+[REQ]---/api/articles/readall---Fri Oct 05 2018 16:21:34 GMT+0300 (GMT+03:00)
+---{
+	"id": "1",
+	"articleId": "3"
+}
+
+[REQ]---/api/articles/read---Fri Oct 05 2018 16:22:25 GMT+0300 (GMT+03:00)
+---{
+	"id": "3",
+	"articleId": "3"
+}

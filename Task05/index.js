@@ -238,7 +238,7 @@ function parseBodyJson(req, cb) {
     body = Buffer.concat(body).toString();
 
     let params = JSON.parse(body);
-
-    cb(null, params);
+    fs.appendFile('log.txt','\n[REQ]---'+req.url+'---'+new Date()+'\n---'+body+'\n',()=>{cb(null, params);});
+    
   });
 }
