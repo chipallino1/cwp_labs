@@ -16,24 +16,47 @@ const handlers = {
   '/api/comments/create':createComment,
   '/api/comments/delete':dropComment,
   '/api/log':sendLog,
-  '/index.html':sendStartup
+  '/index.html':sendStartup,
+  '/form.html':createForm,
+  '/getAllArticles.js':getAll,
+  '/form.js':formJS
 };
 
+function getAll(req, res, payload, cb) {
+  res.statusCode=200;
+  res.setHeader('Content-Type','text/javascript');   
+  fs.readFile('getAllArticles.js',(error,data)=>{
+    cb(null,data);
+  })
+  
+}
+function formJS(req, res, payload, cb) {
+  res.statusCode=200;
+  res.setHeader('Content-Type','text/javascript');   
+  fs.readFile('form.js',(error,data)=>{
+    cb(null,data);
+  })
+  
+}
+function createForm(req, res, payload, cb) {
+  
+  fs.readFile('form.html',(error,data)=>{
+       res.statusCode=200;
+      res.setHeader('Content-Type','text/html');
+      cb(null,data);
+    })
 
+}
 const server = http.createServer((req, res) => {
-  //console.log(req);
-  if(req.url=='/index.html' || req.url=='/')
+  
+  const reqHeader=req.headers['content-type'];
+ // console.log(reqHeader);
+  const handler = getHandler(req.url);
+  if(reqHeader=='application/json')
   {
-    sendStartup(req, res, (err, result)=>{
-      res.statusCode=200;
-      res.setHeader('Content-Type','text/html');        
-      res.end(result);
-
-    });
-  }
-  /*parseBodyJson(req, (err, payload) => {
-    const handler = getHandler(req.url);
-
+    parseBodyJson(req, (err, payload) => {
+    
+      console.log(payload);
     handler(req, res, payload, (err, result,isJson) => {
       if (err) {
         res.statusCode = err.code;
@@ -52,14 +75,24 @@ const server = http.createServer((req, res) => {
       }
       else{
         res.statusCode=200;
-        res.setHeader('Content-Type','application/json');
-        
-          res.end(result);
+        res.setHeader('Content-Type','application/json');        
+        res.end(result);
         
         
       }
     });
-  });*/
+  });
+  }
+  else
+  {
+      handler(req, res,null, (err, result)=>{
+             
+      res.end(result);
+      });
+    
+  }
+
+  /**/
 });
 
 server.listen(port, hostname, () => {
@@ -88,14 +121,14 @@ function readall(req, res, payload, cb) {
       let articles=JSON.parse(data);
      
 
-     // console.log(payload.limit);
+      console.log(payload.limit);
      sortType=payload.sortType;
      sortField=payload.sortField;
      if(sortType==='asc')
       articles.sort(asc);
     else
       articles.sort(desc);
-     // console.log(articles);
+     console.log(articles);
 
      let allPages=[];
      let items=[];
@@ -118,7 +151,7 @@ function readall(req, res, payload, cb) {
               }
           if(page==payload.page)
           {
-            if(payload.includeDeps=='true')
+            if(payload.includeDeps=='false')
             {
               articles[i].comments=null;
             }
@@ -304,9 +337,11 @@ function sendLog(req, res, payload, cb) {
 
 }
 
-function sendStartup(req, res, cb)
+function sendStartup(req, res,payload, cb)
 {
     fs.readFile('index.html',(error,data)=>{
+       res.statusCode=200;
+      res.setHeader('Content-Type','text/html');
       cb(null,data);
     })
 }
@@ -331,6 +366,7 @@ function parseBodyJson(req, cb) {
       if(data.length>0)
          log=JSON.parse(data);
       log.push(logNow);
+      console.log(params);
       fs.writeFile('log.json',JSON.stringify(log),(error)=>{cb(null,params)});
     });
     

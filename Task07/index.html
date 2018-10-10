@@ -2,8 +2,22 @@
 <html>
 <head>
 	<title>egor</title>
+
 </head>
 <body>
-<form></form>
+	
+<form>
+ Page:<input type="text" id="page" value="1"><br>
+ SortType<input type="text" id="sortType" value="asc"><br>
+ SortField<input type="text" id="sortField" value="title"><br>
+ Limit<input type="text" id="limit" value="5"><br>
+ IncludeDeps<input type="text" id="includeDeps" value="false" onclick="get()"><br>
+ <input type="submit" value="Send">
+ <div id="articlesContainer">
+ 
+ </div>
+</form>
+<script type="text/javascript" src="/getAllArticles.js"></script>
+
 </body>
 </html>
