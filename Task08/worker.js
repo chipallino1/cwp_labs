@@ -1,18 +1,9 @@
 const fs=require('fs');
 
-let path;
-let X;
+const path=process.argv[2];
+const X=process.argv[3];
 let stop;
 
-if(process.argv.length>3)
-{
-	path=process.argv[2];
-	X=process.argv[3];
-}
-else
-{
-	stop=false;
-}
 startAddRandom(path);
 
 function startAddRandom(path,callback)
