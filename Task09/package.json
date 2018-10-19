@@ -2,6 +2,7 @@
 	"name": "cwp-09",
 	"author": "egor",
 	"dependencies": {
+		"axios": "^0.18.0",
 		"bluebird": "^3.5.2"
 	}
 }
