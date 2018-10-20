@@ -4,7 +4,8 @@ const path=process.argv[2];
 const X=process.argv[3];
 let stop;
 
-startAddRandom(path);
+let all=[];
+addRandom(path,all);
 
 function startAddRandom(path,callback)
 {
@@ -16,22 +17,28 @@ function startAddRandom(path,callback)
 			let allRandom=[];
 			allRandom=JSON.parse(data);
 			console.log('parse good!');
-			setTimeout(addRandom,X,path,allRandom);
+			setTimeout(addRandom,X*1000,path,allRandom);
 		});
 }
 function addRandom(path,allRandom)
 {
-	allRandom.push(3);
+	console.log(path);
+	const add=getRandomInt(0,10000);
+	allRandom.push(add);
 	fs.writeFile(path,JSON.stringify(allRandom),(error)=>
 		{
 			console.log('write in file!');
 			if(!stop)
 			{
-				setTimeout(addRandom,X,path,allRandom);
+				setTimeout(addRandom,X*1000,path,allRandom);
 			}
 			else
 			{
 				return;
 			}
 		});
+}
+function getRandomInt(min, max)
+{
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
