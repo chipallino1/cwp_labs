@@ -31,24 +31,24 @@ const dirs = [
 ];
 
 axios.get(urlPop2017).
-	then(populationAll);
+	then(populationAll).catch(getError);
 
 const popMany=[];
 for(let i=0;i<urlMany.length;i++)
 {
 	popMany.push(axios.get(urlMany[i]));
 }
-prom.all(popMany).then(populationMany);
+prom.all(popMany).then(populationMany).catch(getError);
 
 const popBel14_15=[
 		urlPop2014,
 		urlPop2015
 ];
 
-prom.any([axios.get(urlPop2014),axios.get(urlPop2015)]).then(population14_15);
+prom.any([axios.get(urlPop2014),axios.get(urlPop2015)]).then(population14_15).catch(getError);
 
 
-prom.props({mortalityGreece:axios.get(urlMortalityGreeceM).then(mortality),mortalityTurkey:axios.get(urlMortalityTurkeyM).then(mortality)})
+prom.props({mortalityGreece:axios.get(urlMortalityGreeceM).then(mortality).catch(getError),mortalityTurkey:axios.get(urlMortalityTurkeyM).then(mortality).catch(getError)})
 .then((result)=>{
 	console.log("Mortality Greece: "+result.mortalityGreece);
 	console.log("Mortality Turkey: "+result.mortalityTurkey);
@@ -85,9 +85,9 @@ axios.get('http://api.population.io:80/1.0/countries').then((result)=>{
 		}
 		allTotal+=total;
 
-	}).then(()=>{console.log('Total: '+allTotal);});
+	}).then(()=>{console.log('Total: '+allTotal);}).catch(getError);
 
-});
+}).catch(getError);
 
 
 let fs = prom.promisifyAll(require('fs'));
@@ -98,8 +98,8 @@ for(let i=0;i<dirs.length;i++)
 }
 
 prom.mapSeries(allFs,function (item) {
-	console.log(item);
-});
+	//console.log(item);
+}).catch(getError);
 
 
 
@@ -190,4 +190,7 @@ function popCountries(results) {
 		}
 	}
 	console.log('Total: '+total);
+}
+function getError(error) {
+	console.log("Something bad");
 }
