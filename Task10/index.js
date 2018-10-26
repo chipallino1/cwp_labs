@@ -174,7 +174,7 @@ app.post('/api/films/update',(req,res)=>{
 	});
 });
 
-app.post('api/films/delete',(req,res)=>{
+app.post('/api/films/delete',(req,res)=>{
 	parseBodyJson(req,res,(error,payload)=>{
 
 		fs.readFile('top250.json',(error,data)=>{
@@ -190,9 +190,8 @@ app.post('api/films/delete',(req,res)=>{
 					deletedItem=parseData[i];
 					parseData.splice(i,1);
 					isDeleted=true;
-					continue;
 				}
-				if(isDeleted)
+				if(isDeleted && i<parseData.length)
 				{
 					parseData[i].position--;
 				}
