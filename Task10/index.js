@@ -180,12 +180,14 @@ app.post('api/films/delete',(req,res)=>{
 		fs.readFile('top250.json',(error,data)=>{
 
 			let parseData=JSON.parse(data);
+			let deletedItem;
 			parseData.sort(sortByPosition);
 			let isDeleted=false;
 			for(let i=0;i<parseData.length;i++)
 			{
 				if(parseData[i].id==payload.id && !isDeleted)
 				{
+					deletedItem=parseData[i];
 					parseData.splice(i,1);
 					isDeleted=true;
 					continue;
@@ -195,6 +197,9 @@ app.post('api/films/delete',(req,res)=>{
 					parseData[i].position--;
 				}
 			}
+			fs.writeFile('top250.json',JSON.stringify(parseData),(err)=>{
+				res.send(JSON.stringify(deletedItem));
+			})
 
 		})
 
