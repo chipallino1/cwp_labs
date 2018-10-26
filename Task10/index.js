@@ -174,6 +174,33 @@ app.post('/api/films/update',(req,res)=>{
 	});
 });
 
+app.post('api/films/delete',(req,res)=>{
+	parseBodyJson(req,res,(error,payload)=>{
+
+		fs.readFile('top250.json',(error,data)=>{
+
+			let parseData=JSON.parse(data);
+			parseData.sort(sortByPosition);
+			let isDeleted=false;
+			for(let i=0;i<parseData.length;i++)
+			{
+				if(parseData[i].id==payload.id && !isDeleted)
+				{
+					parseData.splice(i,1);
+					isDeleted=true;
+					continue;
+				}
+				if(isDeleted)
+				{
+					parseData[i].position--;
+				}
+			}
+
+		})
+
+	});
+});
+
 app.listen(3000, () => {
   console.log('App listening on port 3000!');
 })
